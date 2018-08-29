@@ -21,6 +21,8 @@
 // https://github.com/DaveDavenport/rofi/pull/848
 #include <rofi/mode-private.h>
 
+#include <libqalculate/Calculator.h>
+
 namespace {
 
 typedef struct {
@@ -43,7 +45,7 @@ void qalc_mode_destroy(Mode* sw) {
 }
 
 unsigned int qalc_mode_get_num_entries(const Mode* sw) {
-  return 0;
+  return 1;
 }
 
 ModeMode qalc_mode_result(Mode* sw,
@@ -56,7 +58,7 @@ ModeMode qalc_mode_result(Mode* sw,
 int qalc_token_match(const Mode* sw,
                      rofi_int_matcher** tokens,
                      unsigned int index) {
-  return true;
+  return 1;
 }
 
 char* qalc_get_display_value(const Mode* sw,
@@ -64,11 +66,11 @@ char* qalc_get_display_value(const Mode* sw,
                              int* state,
                              GList** attr_list,
                              int get_entry) {
-  return nullptr;
+  return strdup("test");
 }
 
 char* qalc_preprocess_input(Mode* sw, const char* input) {
-  return nullptr;
+  return strdup("test2");
 }
 
 char* qalc_get_message(const Mode* sw) {
@@ -81,7 +83,7 @@ Mode mode{
     ABI_VERSION,
     const_cast<char*>(&"qalc"[0]),
     "",
-    const_cast<char*>(&"display-qalc"[0]),
+    const_cast<char*>(&"qalc"[0]),
     qalc_mode_init,
     qalc_mode_destroy,
     qalc_mode_get_num_entries,

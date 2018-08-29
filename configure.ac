@@ -47,6 +47,7 @@ dnl ---------------------------------------------------------------------
 dnl PKG_CONFIG based dependencies  
 dnl ---------------------------------------------------------------------
 PKG_CHECK_MODULES([rofi], [rofi])
+PKG_CHECK_MODULES([QALCULATE], [libqalculate >= 1.0.0])
 
 # TODO: Remove once the below change lands:
 # https://github.com/DaveDavenport/rofi/pull/848

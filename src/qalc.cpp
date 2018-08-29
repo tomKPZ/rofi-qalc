@@ -24,6 +24,7 @@
 #include <libqalculate/Calculator.h>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace {
@@ -39,10 +40,8 @@ class Qalc {
 
   static int ModeInit(Mode* sw) {
     Qalc* pd = GetInstance(sw);
-    if (!pd) {
-      pd = new Qalc();
-      mode_set_private_data(sw, reinterpret_cast<void*>(pd));
-    }
+    if (!pd)
+      mode_set_private_data(sw, reinterpret_cast<void*>(new Qalc()));
     return true;
   }
 
@@ -54,7 +53,9 @@ class Qalc {
     }
   }
 
-  static unsigned int ModeGetNumEntries(const Mode* sw) { return 1; }
+  static unsigned int ModeGetNumEntries(const Mode* sw) {
+    return GetInstance(sw)->GetNumEntries();
+  }
 
   static ModeMode ModeResult(Mode* sw,
                              int menu_entry,
@@ -88,15 +89,28 @@ class Qalc {
     return reinterpret_cast<Qalc*>(mode_get_private_data(sw));
   }
 
-  char* GetDisplayValue() { return strdup(result.c_str()); }
+  int GetNumEntries() const { return result.has_value() ? 1 : 0; }
+
+  char* GetDisplayValue() const {
+    return strdup(result.has_value() ? result.value().c_str() : "");
+  }
 
   char* PreprocessInput(const char* input) {
     result = calculator.calculateAndPrint(input, 250);
-    return strdup(result.c_str());
+    CalculatorMessage* message;
+    while (message = calculator.message()) {
+      calculator.nextMessage();
+      if (message->type() == MESSAGE_WARNING ||
+          message->type() == MESSAGE_ERROR) {
+        result = std::nullopt;
+      }
+      std::cout << message->message() << std::endl;
+    }
+    return GetDisplayValue();
   }
 
   Calculator calculator;
-  std::string result;
+  std::optional<std::string> result;
 };
 
 }  // namespace

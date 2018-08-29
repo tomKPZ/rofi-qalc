@@ -121,3 +121,9 @@ flycheck_*.el
 
 # directory configuration
 .dir-locals.el
+
+Makefile
+config.h
+libtool
+src/.deps
+src/.dirstamp

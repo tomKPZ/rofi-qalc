@@ -2,9 +2,9 @@ AC_INIT([rofi-qalc], [0.0.1], [https://github.com/tomKPZ/rofi-qalc/issues],[],[h
 
 AC_CONFIG_HEADER([config.h])
 
-
+AC_USE_SYSTEM_EXTENSIONS
 AC_CONFIG_MACRO_DIRS([m4])
-AM_INIT_AUTOMAKE([-Wall -Werror dist-xz])
+AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects dist-xz])
 
 dnl ---------------------------------------------------------------------
 dnl  Check for compiler

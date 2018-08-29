@@ -15,8 +15,11 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
-#include <rofi/mode-private.h>
 #include <rofi/mode.h>
+
+// TODO: Sort includes once the below change lands:
+// https://github.com/DaveDavenport/rofi/pull/848
+#include <rofi/mode-private.h>
 
 namespace {
 

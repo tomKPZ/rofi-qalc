@@ -3,9 +3,9 @@ plugindir=@rofi_PLUGIN_INSTALL_DIR@
 
 plugin_LTLIBRARIES = qalc.la
 
-dict_la_SOURCES=\
+qalc_la_SOURCES=\
 		 src/qalc.cpp
 
-dict_la_CFLAGS= @rofi_CFLAGS@
-dict_la_LIBADD= @rofi_LIBS@
-dict_la_LDFLAGS= -module -avoid-version
+qalc_la_CFLAGS= @rofi_CFLAGS@
+qalc_la_LIBADD= @rofi_LIBS@
+qalc_la_LDFLAGS= -module -avoid-version

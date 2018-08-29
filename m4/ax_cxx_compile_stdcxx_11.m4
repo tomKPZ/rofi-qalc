@@ -1,19 +1,19 @@
 # =============================================================================
-#  https://www.gnu.org/software/autoconf-archive/ax_cxx_compile_stdcxx_11.html
+#  https://www.gnu.org/software/autoconf-archive/ax_cxx_compile_stdcxx_14.html
 # =============================================================================
 #
 # SYNOPSIS
 #
-#   AX_CXX_COMPILE_STDCXX_11([ext|noext], [mandatory|optional])
+#   AX_CXX_COMPILE_STDCXX_14([ext|noext], [mandatory|optional])
 #
 # DESCRIPTION
 #
-#   Check for baseline language coverage in the compiler for the C++11
+#   Check for baseline language coverage in the compiler for the C++14
 #   standard; if necessary, add switches to CXX and CXXCPP to enable
 #   support.
 #
 #   This macro is a convenience alias for calling the AX_CXX_COMPILE_STDCXX
-#   macro with the version set to C++11.  The two optional arguments are
+#   macro with the version set to C++14.  The two optional arguments are
 #   forwarded literally as the second and third argument respectively.
 #   Please see the documentation for the AX_CXX_COMPILE_STDCXX macro for
 #   more information.  If you want to use this macro, you also need to
@@ -36,4 +36,4 @@
 #serial 18
 
 AX_REQUIRE_DEFINED([AX_CXX_COMPILE_STDCXX])
-AC_DEFUN([AX_CXX_COMPILE_STDCXX_11], [AX_CXX_COMPILE_STDCXX([11], [$1], [$2])])
+AC_DEFUN([AX_CXX_COMPILE_STDCXX_14], [AX_CXX_COMPILE_STDCXX([14], [$1], [$2])])

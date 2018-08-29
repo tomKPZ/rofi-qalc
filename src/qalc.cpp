@@ -22,23 +22,32 @@
 #include <rofi/mode-private.h>
 
 #include <libqalculate/Calculator.h>
+#include <iostream>
+#include <memory>
+#include <string>
 
 namespace {
 
 typedef struct {
-} CALCModePrivateData;
+  std::string result;
+} QalcPrivateData;
+
+QalcPrivateData* get_private_data(const Mode* sw) {
+  return reinterpret_cast<QalcPrivateData*>(mode_get_private_data(sw));
+}
 
 int qalc_mode_init(Mode* sw) {
-  if (mode_get_private_data(sw) == nullptr) {
-    CALCModePrivateData* pd = new CALCModePrivateData();
-    mode_set_private_data(sw, (void*)pd);
+  QalcPrivateData* pd = get_private_data(sw);
+  if (!pd) {
+    pd = new QalcPrivateData();
+    mode_set_private_data(sw, reinterpret_cast<void*>(pd));
   }
   return true;
 }
 
 void qalc_mode_destroy(Mode* sw) {
-  CALCModePrivateData* pd = (CALCModePrivateData*)mode_get_private_data(sw);
-  if (pd != nullptr) {
+  QalcPrivateData* pd = get_private_data(sw);
+  if (pd) {
     delete pd;
     mode_set_private_data(sw, nullptr);
   }
@@ -66,11 +75,15 @@ char* qalc_get_display_value(const Mode* sw,
                              int* state,
                              GList** attr_list,
                              int get_entry) {
-  return strdup("test");
+  return strdup(get_private_data(sw)->result.c_str());
 }
 
 char* qalc_preprocess_input(Mode* sw, const char* input) {
-  return strdup("test2");
+  std::unique_ptr<Calculator> calculator = std::make_unique<Calculator>();
+  calculator->loadGlobalDefinitions();
+  calculator->loadLocalDefinitions();
+  get_private_data(sw)->result = calculator->calculateAndPrint(input, 250);
+  return strdup(input);
 }
 
 char* qalc_get_message(const Mode* sw) {

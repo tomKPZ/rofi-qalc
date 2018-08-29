@@ -53,9 +53,7 @@ class Qalc {
     }
   }
 
-  static unsigned int ModeGetNumEntries(const Mode* sw) {
-    return GetInstance(sw)->GetNumEntries();
-  }
+  static unsigned int ModeGetNumEntries(const Mode* sw) { return 1; }
 
   static ModeMode ModeResult(Mode* sw,
                              int menu_entry,
@@ -67,7 +65,7 @@ class Qalc {
   static int TokenMatch(const Mode* sw,
                         rofi_int_matcher** tokens,
                         unsigned int index) {
-    return 1;
+    return GetInstance(sw)->TokenMatch();
   }
 
   static char* GetDisplayValue(const Mode* sw,
@@ -82,21 +80,20 @@ class Qalc {
     return GetInstance(sw)->PreprocessInput(input);
   }
 
-  static char* GetMessage(const Mode* sw) { return nullptr; }
-
  private:
   static Qalc* GetInstance(const Mode* sw) {
     return reinterpret_cast<Qalc*>(mode_get_private_data(sw));
   }
 
-  int GetNumEntries() const { return result.has_value() ? 1 : 0; }
+  int TokenMatch() { return result.has_value(); }
 
   char* GetDisplayValue() const {
     return strdup(result.has_value() ? result.value().c_str() : "");
   }
 
   char* PreprocessInput(const char* input) {
-    result = calculator.calculateAndPrint(input, 250);
+    if (input && input[0])
+      result = calculator.calculateAndPrint(input, 100);
     CalculatorMessage* message;
     while (message = calculator.message()) {
       calculator.nextMessage();
@@ -104,7 +101,6 @@ class Qalc {
           message->type() == MESSAGE_ERROR) {
         result = std::nullopt;
       }
-      std::cout << message->message() << std::endl;
     }
     return GetDisplayValue();
   }
@@ -118,7 +114,7 @@ class Qalc {
 Mode mode{
     ABI_VERSION,
     const_cast<char*>(&"qalc"[0]),
-    "",
+    "display-qalc",
     const_cast<char*>(&"qalc"[0]),
     Qalc::ModeInit,
     Qalc::ModeDestroy,
@@ -129,7 +125,7 @@ Mode mode{
     nullptr,
     nullptr,
     Qalc::PreprocessInput,
-    Qalc::GetMessage,
+    nullptr,
     nullptr,
     nullptr,
     nullptr,

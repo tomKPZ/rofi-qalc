@@ -80,9 +80,9 @@ char* qalc_get_message(const Mode* sw) {
 
 Mode mode{
     ABI_VERSION,
-    "qalc",
-    "display-qalc",
-    nullptr,
+    const_cast<char*>(&"qalc"[0]),
+    "",
+    const_cast<char*>(&"display-qalc"[0]),
     qalc_mode_init,
     qalc_mode_destroy,
     qalc_mode_get_num_entries,

@@ -48,6 +48,11 @@ dnl PKG_CONFIG based dependencies
 dnl ---------------------------------------------------------------------
 PKG_CHECK_MODULES([rofi], [rofi])
 
+# TODO: Remove once the below change lands:
+# https://github.com/DaveDavenport/rofi/pull/848
+PKG_CHECK_MODULES([glib], [glib-2.0 >= 2.40 gio-unix-2.0 gmodule-2.0 ])
+PKG_CHECK_MODULES([cairo], [cairo])
+
 [rofi_PLUGIN_INSTALL_DIR]="`$PKG_CONFIG --variable=pluginsdir rofi`"
 AC_SUBST([rofi_PLUGIN_INSTALL_DIR])
 

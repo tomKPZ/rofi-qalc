@@ -28,67 +28,76 @@
 
 namespace {
 
-typedef struct {
+class Qalc {
+ public:
+  Qalc() {
+    calculator.loadGlobalDefinitions();
+    calculator.loadLocalDefinitions();
+  }
+
+  ~Qalc() {}
+
+  static int ModeInit(Mode* sw) {
+    Qalc* pd = GetInstance(sw);
+    if (!pd) {
+      pd = new Qalc();
+      mode_set_private_data(sw, reinterpret_cast<void*>(pd));
+    }
+    return true;
+  }
+
+  static void ModeDestroy(Mode* sw) {
+    Qalc* pd = GetInstance(sw);
+    if (pd) {
+      delete pd;
+      mode_set_private_data(sw, nullptr);
+    }
+  }
+
+  static unsigned int ModeGetNumEntries(const Mode* sw) { return 1; }
+
+  static ModeMode ModeResult(Mode* sw,
+                             int menu_entry,
+                             char** input,
+                             unsigned int selected_line) {
+    return MODE_EXIT;
+  }
+
+  static int TokenMatch(const Mode* sw,
+                        rofi_int_matcher** tokens,
+                        unsigned int index) {
+    return 1;
+  }
+
+  static char* GetDisplayValue(const Mode* sw,
+                               unsigned int selected_line,
+                               int* state,
+                               GList** attr_list,
+                               int get_entry) {
+    return GetInstance(sw)->GetDisplayValue();
+  }
+
+  static char* PreprocessInput(Mode* sw, const char* input) {
+    return GetInstance(sw)->PreprocessInput(input);
+  }
+
+  static char* GetMessage(const Mode* sw) { return nullptr; }
+
+ private:
+  static Qalc* GetInstance(const Mode* sw) {
+    return reinterpret_cast<Qalc*>(mode_get_private_data(sw));
+  }
+
+  char* GetDisplayValue() { return strdup(result.c_str()); }
+
+  char* PreprocessInput(const char* input) {
+    result = calculator.calculateAndPrint(input, 250);
+    return strdup(result.c_str());
+  }
+
+  Calculator calculator;
   std::string result;
-} QalcPrivateData;
-
-QalcPrivateData* get_private_data(const Mode* sw) {
-  return reinterpret_cast<QalcPrivateData*>(mode_get_private_data(sw));
-}
-
-int qalc_mode_init(Mode* sw) {
-  QalcPrivateData* pd = get_private_data(sw);
-  if (!pd) {
-    pd = new QalcPrivateData();
-    mode_set_private_data(sw, reinterpret_cast<void*>(pd));
-  }
-  return true;
-}
-
-void qalc_mode_destroy(Mode* sw) {
-  QalcPrivateData* pd = get_private_data(sw);
-  if (pd) {
-    delete pd;
-    mode_set_private_data(sw, nullptr);
-  }
-}
-
-unsigned int qalc_mode_get_num_entries(const Mode* sw) {
-  return 1;
-}
-
-ModeMode qalc_mode_result(Mode* sw,
-                          int menu_entry,
-                          char** input,
-                          unsigned int selected_line) {
-  return MODE_EXIT;
-}
-
-int qalc_token_match(const Mode* sw,
-                     rofi_int_matcher** tokens,
-                     unsigned int index) {
-  return 1;
-}
-
-char* qalc_get_display_value(const Mode* sw,
-                             unsigned int selected_line,
-                             int* state,
-                             GList** attr_list,
-                             int get_entry) {
-  return strdup(get_private_data(sw)->result.c_str());
-}
-
-char* qalc_preprocess_input(Mode* sw, const char* input) {
-  std::unique_ptr<Calculator> calculator = std::make_unique<Calculator>();
-  calculator->loadGlobalDefinitions();
-  calculator->loadLocalDefinitions();
-  get_private_data(sw)->result = calculator->calculateAndPrint(input, 250);
-  return strdup(input);
-}
-
-char* qalc_get_message(const Mode* sw) {
-  return nullptr;
-}
+};
 
 }  // namespace
 
@@ -97,16 +106,16 @@ Mode mode{
     const_cast<char*>(&"qalc"[0]),
     "",
     const_cast<char*>(&"qalc"[0]),
-    qalc_mode_init,
-    qalc_mode_destroy,
-    qalc_mode_get_num_entries,
-    qalc_mode_result,
-    qalc_token_match,
-    qalc_get_display_value,
+    Qalc::ModeInit,
+    Qalc::ModeDestroy,
+    Qalc::ModeGetNumEntries,
+    Qalc::ModeResult,
+    Qalc::TokenMatch,
+    Qalc::GetDisplayValue,
     nullptr,
     nullptr,
-    qalc_preprocess_input,
-    qalc_get_message,
+    Qalc::PreprocessInput,
+    Qalc::GetMessage,
     nullptr,
     nullptr,
     nullptr,
